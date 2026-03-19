@@ -1,0 +1,60 @@
+name: STVInsurance
+version: '${project.version}'
+main: org.sovereigntv.stvinsurance.Main
+api-version: 1.16
+author: SovereignTV
+description: Multi-version item insurance system for Minecraft servers (1.16.5 - 1.21.9+). Slots are permission-based (donation tiers).
+
+softdepend:
+  - PlaceholderAPI
+  - Vault
+  - PlayerPoints
+
+commands:
+  insurance:
+    description: Open insurance menu
+    usage: /<command>
+    aliases: [ins, страховка]
+  insuranceadmin:
+    description: Admin commands for insurance
+    usage: /<command> <reload|info>
+    aliases: [insadmin]
+    permission: stvinsurance.admin
+
+permissions:
+  stvinsurance.use:
+    description: Allows using insurance system
+    default: true
+  stvinsurance.admin:
+    description: Admin permissions
+    default: op
+  stvinsurance.slots.2:
+    description: Allows 2 insurance slots
+    default: false
+  stvinsurance.slots.3:
+    description: Allows 3 insurance slots
+    default: false
+  stvinsurance.slots.4:
+    description: Allows 4 insurance slots
+    default: false
+  stvinsurance.slots.5:
+    description: Allows 5 insurance slots
+    default: false
+  stvinsurance.slots.6:
+    description: Allows 6 insurance slots
+    default: false
+  stvinsurance.slots.7:
+    description: Allows 7 insurance slots
+    default: false
+  stvinsurance.slots.8:
+    description: Allows 8 insurance slots
+    default: false
+  stvinsurance.slots.9:
+    description: Allows 9 insurance slots
+    default: false
+  stvinsurance.slots.10:
+    description: Allows 10 insurance slots
+    default: false
+  stvinsurance.bypass.cooldown:
+    description: Bypass insurance cooldown
+    default: op

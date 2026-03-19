@@ -1,0 +1,590 @@
+# ═══════════════════════════════════════════════════════════════════════
+#                         STVInsurance Configuration
+#                    Система страхования предметов
+# ═══════════════════════════════════════════════════════════════════════
+
+# Основные настройки
+settings:
+  # Время на выкуп застрахованного предмета после смерти (в секундах)
+  # 2 часа = 7200 секунд
+  redemption-time: 7200
+
+  # Базовое количество слотов для игроков БЕЗ привилегий
+  # Игроки с правом stvinsurance.slots.2 получают 2 базовых слота
+  # Игроки с правом stvinsurance.slots.3 получают 3 базовых слота
+  default-slots: 1
+
+  # Максимальное количество БОНУСНЫХ слотов (от камней апгрейда)
+  # Бонусные слоты добавляются к базовым
+  #
+  # Итоговые максимальные слоты:
+  #   • Обычный игрок:       1 базовый + 2 бонусных = 3 слота макс.
+  #   • Донатер (slots.2):   2 базовых + 2 бонусных = 4 слота макс.
+  #   • Донатер (slots.3):   3 базовых + 2 бонусных = 5 слотов макс.
+  max-bonus-slots: 2
+
+  # Интервал автосохранения данных (в минутах)
+  auto-save-interval: 5
+
+  # Интервал проверки истекших страховок (в секундах)
+  expiry-check-interval: 60
+
+  # Стоимость страхования предмета (0 - бесплатно)
+  insurance-cost: 1000
+
+  # Метка страховки в lore предмета
+  insurance-lore-mark: "&c&lПредмет застрахован"
+
+# ═══════════════════════════════════════════════════════════════════════
+#                         СИСТЕМА СЛОТОВ
+# ═══════════════════════════════════════════════════════════════════════
+#
+# БАЗОВЫЕ СЛОТЫ (от привилегий):
+#   • Без прав:              1 слот (default-slots)
+#   • stvinsurance.slots.2:  2 слота
+#   • stvinsurance.slots.3:  3 слота
+#
+# БОНУСНЫЕ СЛОТЫ (от камней апгрейда):
+#   • Каждый камень дает +1 слот
+#   • Максимум: max-bonus-slots (по умолчанию 2)
+#
+# ИТОГО = базовые + бонусные
+#
+# Примеры:
+#   • Игрок без привилегий с 0 камнями: 1 + 0 = 1 слот
+#   • Игрок без привилегий с 2 камнями: 1 + 2 = 3 слота (максимум)
+#   • Донатер slots.2 с 0 камнями:      2 + 0 = 2 слота
+#   • Донатер slots.2 с 2 камнями:      2 + 2 = 4 слота (максимум)
+#   • Донатер slots.3 с 2 камнями:      3 + 2 = 5 слотов (максимум)
+#
+# ═══════════════════════════════════════════════════════════════════════
+
+# ═══════════════════════════════════════════════════════════════════════
+#                         ПРАВА (PERMISSIONS)
+# ═══════════════════════════════════════════════════════════════════════
+#
+# stvinsurance.use         - доступ к /insurance (по умолчанию всем)
+# stvinsurance.admin       - доступ к /insadmin
+# stvinsurance.slots.2     - 2 базовых слота (для донатеров)
+# stvinsurance.slots.3     - 3 базовых слота (для донатеров)
+#
+# ═══════════════════════════════════════════════════════════════════════
+
+# ═══════════════════════════════════════════════════════════════════════
+# КАМНИ АПГРЕЙДА
+# ═══════════════════════════════════════════════════════════════════════
+# Камни апгрейда управляются плагином STVUpgradeStone.
+# Для выдачи камней используйте:
+#   /upgradestone give <игрок> [количество]
+#
+# Камень увеличивает бонусные слоты на 1 (до max-bonus-slots)
+# ═══════════════════════════════════════════════════════════════════════
+
+# Настройки стоимости выкупа (монеты Vault)
+redemption-cost:
+  # Использовать Vault для экономики
+  use-vault: true
+
+  # Базовая стоимость выкупа (в валюте)
+  base-cost: 1000
+
+  # Множитель стоимости от уровня зачарования предмета
+  # Финальная цена = base-cost + (enchantment-multiplier * общий_уровень_зачарований)
+  enchantment-multiplier: 100
+
+  # Максимальная стоимость выкупа
+  max-cost: 50000
+
+  # Стоимость выкупа для конкретных предметов (переопределяет базовую)
+  # Формат: MATERIAL_NAME: стоимость
+  custom-costs:
+    NETHERITE_SWORD: 5000
+    NETHERITE_PICKAXE: 5000
+    NETHERITE_AXE: 5000
+    NETHERITE_SHOVEL: 4000
+    NETHERITE_HOE: 3000
+    NETHERITE_HELMET: 6000
+    NETHERITE_CHESTPLATE: 8000
+    NETHERITE_LEGGINGS: 7000
+    NETHERITE_BOOTS: 6000
+    DIAMOND_SWORD: 2000
+    DIAMOND_PICKAXE: 2000
+    DIAMOND_AXE: 2000
+    DIAMOND_HELMET: 3000
+    DIAMOND_CHESTPLATE: 4000
+    DIAMOND_LEGGINGS: 3500
+    DIAMOND_BOOTS: 3000
+    TOTEM_OF_UNDYING: 10000
+    ELYTRA: 15000
+    TRIDENT: 8000
+    ENCHANTED_GOLDEN_APPLE: 5000
+
+# Настройки стоимости выкупа (донат-валюта PlayerPoints)
+redemption-cost-points:
+  # Включить выкуп за донат-валюту
+  enabled: true
+
+  # Базовая стоимость выкупа (в поинтах)
+  base-cost: 100
+
+  # Множитель стоимости от уровня зачарования предмета
+  enchantment-multiplier: 10
+
+  # Максимальная стоимость выкупа
+  max-cost: 5000
+
+  # Стоимость выкупа для конкретных предметов (в поинтах)
+  custom-costs:
+    NETHERITE_SWORD: 500
+    NETHERITE_PICKAXE: 500
+    NETHERITE_AXE: 500
+    NETHERITE_SHOVEL: 400
+    NETHERITE_HOE: 300
+    NETHERITE_HELMET: 600
+    NETHERITE_CHESTPLATE: 800
+    NETHERITE_LEGGINGS: 700
+    NETHERITE_BOOTS: 600
+    DIAMOND_SWORD: 200
+    DIAMOND_PICKAXE: 200
+    DIAMOND_AXE: 200
+    DIAMOND_HELMET: 300
+    DIAMOND_CHESTPLATE: 400
+    DIAMOND_LEGGINGS: 350
+    DIAMOND_BOOTS: 300
+    TOTEM_OF_UNDYING: 1000
+    ELYTRA: 1500
+    TRIDENT: 800
+    ENCHANTED_GOLDEN_APPLE: 500
+
+# Разрешенные для страхования предметы
+# Если список пуст - разрешены все предметы
+# Форматы:
+#   - MATERIAL_NAME - конкретный предмет
+#   - CATEGORY:название - категория предметов
+# Доступные категории: TOOLS, ARMOR, WEAPONS, TOTEMS, ELYTRA, TRIDENTS
+allowed-items:
+  categories:
+    - TOOLS
+    - ARMOR
+    - WEAPONS
+    - TOTEMS
+    - ELYTRA
+    - TRIDENTS
+  # Дополнительные предметы (не входящие в категории)
+  additional: []
+
+# Запрещенные предметы (имеют приоритет над разрешенными)
+blacklisted-items:
+  - WOODEN_SWORD
+  - WOODEN_PICKAXE
+  - WOODEN_AXE
+  - WOODEN_SHOVEL
+  - WOODEN_HOE
+  - STONE_SWORD
+  - STONE_PICKAXE
+  - STONE_AXE
+  - STONE_SHOVEL
+  - STONE_HOE
+  - LEATHER_HELMET
+  - LEATHER_CHESTPLATE
+  - LEATHER_LEGGINGS
+  - LEATHER_BOOTS
+
+# ═══════════════════════════════════════════════════════════════════════
+#                              МЕНЮ
+# ═══════════════════════════════════════════════════════════════════════
+
+gui:
+  # Главное меню страховщика
+  main-menu:
+    title: "§x§0§A§7§8§9§9▶ &fСтраховщик"
+    size: 54 # 9, 18, 27, 36, 45, 54
+
+    # Заполнитель пустых слотов
+    filler:
+      enabled: true
+      material: GRAY_STAINED_GLASS_PANE
+      name: " "
+
+    # Кнопка "Застраховать предмет"
+    insure-button:
+      slot: 20
+      material: EMERALD
+      name: "§x§0§A§7§8§9§9▶ &fЗастраховать предмет"
+      lore:
+        - ""
+        - "&fНажмите, чтобы открыть"
+        - "&fменю страхования"
+        - ""
+        - "&fДоступно слотов: §x§0§A§7§8§9§9%available_slots%&8/§x§0§A§7§8§9§9%max_slots%"
+
+    # Кнопка "Мои застрахованные предметы"
+    my-items-button:
+      slot: 22
+      material: CHEST
+      name: "§x§0§A§7§8§9§9▶ &fМои предметы"
+      lore:
+        - ""
+        - "&fПросмотр застрахованных"
+        - "&fпредметов"
+        - ""
+        - "&fЗастраховано: §x§0§A§7§8§9§9%insured_count%"
+        - "&fОжидает выкупа: §x§0§A§7§8§9§9%pending_count%"
+
+    # Кнопка "Выкупить предметы"
+    redeem-button:
+      slot: 24
+      material: GOLD_INGOT
+      name: "§x§0§A§7§8§9§9▶ &fВыкупить предметы"
+      lore:
+        - ""
+        - "&fВыкупите предметы"
+        - "&fпотерянные при смерти"
+        - ""
+        - "&fОжидает выкупа: §x§0§A§7§8§9§9%pending_count%"
+
+    # Кнопка "Возвращенные предметы"
+    returned-button:
+      slot: 31
+      material: ENDER_CHEST
+      name: "§x§0§A§7§8§9§9▶ &fВозвращенные предметы"
+      lore:
+        - ""
+        - "&fПредметы, полученные от"
+        - "&fдругих игроков"
+        - ""
+        - "&fДоступно: §x§0§A§7§8§9§9%returned_count%"
+
+    # Кнопка камня апгрейда
+    upgrade-stone-button:
+      slot: 40
+      material: PLAYER_HEAD
+      name: "§x§0§A§7§8§9§9▶ &fИспользовать Камень Апгрейда"
+      lore:
+        - ""
+        - "&fИспользуйте камень апгрейда"
+        - "&fдля увеличения слотов"
+        - ""
+        - "&fУ вас камней: §x§0§A§7§8§9§9%stone_count%"
+        - "&fТекущие слоты: §x§0§A§7§8§9§9%current_slots%&8/§x§0§A§7§8§9§9%max_slots%"
+        - "&fБонусные слоты: §x§0§A§7§8§9§9%bonus_slots%&8/§x§0§A§7§8§9§9%max_bonus_slots%"
+      # Fallback текстура (используется если STVUpgradeStone API недоступен)
+      texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWQ4ZWU5OGE0YTU3NTBlZjViNzhmYzYwNDRmNzk3OWU5MGQwYzMxMjViODE3YTllYjhhNjJhMWFkY2YzZWIxZCJ9fX0="
+
+    # Информационная кнопка
+    info-button:
+      slot: 41
+      material: BOOK
+      name: "§x§0§A§7§8§9§9▶ &fИнформация"
+      lore:
+        - ""
+        - "&fСистема страхования позволяет"
+        - "&fзащитить ваши предметы от"
+        - "&fпотери при смерти."
+        - ""
+        - "&fВаши слоты:"
+        - "&8• &fБазовые: §x§0§A§7§8§9§9%base_slots%"
+        - "&8• &fБонусные: §x§0§A§7§8§9§9%bonus_slots%&8/§x§0§A§7§8§9§9%max_bonus_slots%"
+        - "&8• &fВсего: §x§0§A§7§8§9§9%max_slots%&8/§x§0§A§7§8§9§9%max_possible_slots%"
+        - ""
+        - "&fПосле смерти у вас будет"
+        - "§x§0§A§7§8§9§92 часа &fна выкуп предмета."
+        - ""
+        - "&fПри истечении времени:"
+        - "§x§0§A§7§8§9§9• &fPvP - предмет убийце"
+        - "§x§0§A§7§8§9§9• &fPvE - предмет уничтожен"
+
+    # Кнопка закрытия
+    close-button:
+      slot: 49
+      material: BARRIER
+      name: "§x§0§A§7§8§9§9▶ &fЗакрыть"
+      lore:
+        - ""
+        - "&fНажмите для закрытия"
+
+  # Меню выбора предмета для страхования
+  insure-menu:
+    title: "§x§0§A§7§8§9§9▶ &fВыберите предмет"
+    size: 54
+
+    # Слот для информации
+    info-slot: 4
+    info-item:
+      material: PAPER
+      name: "§x§0§A§7§8§9§9▶ &fВыберите предмет"
+      lore:
+        - ""
+        - "&fКликните по предмету в своем"
+        - "&fинвентаре для его страхования"
+        - ""
+        - "&fДоступно слотов: §x§0§A§7§8§9§9%available_slots%&8/§x§0§A§7§8§9§9%max_slots%"
+        - "&fСтоимость страхования: §x§0§A§7§8§9§9%insurance_cost%"
+
+    # Слот для кнопки назад
+    back-slot: 49
+    back-item:
+      material: ARROW
+      name: "§x§0§A§7§8§9§9▶ &fНазад"
+      lore:
+        - ""
+        - "&fВернуться в главное меню"
+
+  # Меню застрахованных предметов
+  insured-items-menu:
+    title: "§x§0§A§7§8§9§9▶ &fЗастрахованные предметы"
+    size: 54
+
+    # Слоты для предметов (до 5 слотов - максимум для донатера slots.3 + 2 бонуса)
+    item-slots: [20, 21, 22, 23, 24]
+
+    # Пустой слот (если нет предмета)
+    empty-slot-item:
+      material: RED_STAINED_GLASS_PANE
+      name: "§x§0§A§7§8§9§9▶ &fПустой слот"
+      lore:
+        - ""
+        - "&fЭтот слот свободен"
+        - "&fдля страхования"
+
+    # Заблокированный слот (недоступен даже с апгрейдом)
+    locked-slot-item:
+      material: BLACK_STAINED_GLASS_PANE
+      name: "§x§0§A§7§8§9§9▶ &fЗаблокировано"
+      lore:
+        - ""
+        - "&fЭтот слот недоступен"
+        - "&fдля вашей привилегии"
+
+    # Лор для застрахованного предмета
+    insured-item-lore:
+      - ""
+      - "§x§0§A§7§8§9§9▶ &fЗастрахован ✓"
+      - ""
+      - "§x§0§A§7§8§9§9Shift+ЛКМ &f- снять страховку"
+
+    back-slot: 49
+
+  # Меню выкупа предметов
+  redeem-menu:
+    title: "§x§0§A§7§8§9§9▶ &fВыкуп предметов"
+    size: 54
+
+    # Слоты для предметов на выкуп
+    item-slots: [10, 11, 12, 13, 14, 15, 16, 19, 20, 21, 22, 23, 24, 25]
+
+    # Лор для предмета на выкуп
+    pending-item-lore:
+      - ""
+      - "§x§0§A§7§8§9§9▶ &fОжидает выкупа"
+      - ""
+      - "&fСтоимость: §x§0§A§7§8§9§9%cost% монет"
+      - "&fИли: §x§0§A§7§8§9§9%points_cost% поинтов"
+      - "&fОсталось времени: §x§0§A§7§8§9§9%time_left%"
+      - ""
+      - "&fПричина смерти: §x§0§A§7§8§9§9%death_reason%"
+      - "&fУбийца: §x§0§A§7§8§9§9%killer%"
+      - ""
+      - "§x§0§A§7§8§9§9ЛКМ &f- выкупить за монеты"
+      - "§x§0§A§7§8§9§9ПКМ &f- выкупить за поинты"
+      - "§x§0§A§7§8§9§9Shift+ЛКМ &f- отказаться от выкупа"
+
+    # Пустое меню
+    empty-item:
+      slot: 22
+      material: HOPPER
+      name: "§x§0§A§7§8§9§9▶ &fПусто"
+      lore:
+        - ""
+        - "&fУ вас нет предметов"
+        - "&fожидающих выкупа"
+
+    back-slot: 49
+
+  # Меню возвращенных предметов
+  returned-menu:
+    title: "§x§0§A§7§8§9§9▶ &fВозвращенные предметы"
+    size: 54
+
+    # Слоты для предметов
+    item-slots: [10, 11, 12, 13, 14, 15, 16, 19, 20, 21, 22, 23, 24, 25]
+
+    # Лор для возвращенного предмета
+    returned-item-lore:
+      - ""
+      - "§x§0§A§7§8§9§9▶ &fПолучено от игрока"
+      - "&f%from_player%"
+      - ""
+      - "§x§0§A§7§8§9§9ЛКМ &f- забрать предмет"
+
+    # Пустое меню
+    empty-item:
+      slot: 22
+      material: HOPPER
+      name: "§x§0§A§7§8§9§9▶ &fПусто"
+      lore:
+        - ""
+        - "&fУ вас нет возвращенных"
+        - "&fпредметов"
+
+    back-slot: 49
+
+  # Меню подтверждения
+  confirm-menu:
+    title: "§x§0§A§7§8§9§9▶ &fПодтверждение"
+    size: 27
+
+    confirm-button:
+      slot: 11
+      material: LIME_WOOL
+      name: "§x§0§A§7§8§9§9▶ &fПодтвердить"
+      lore:
+        - ""
+        - "&fНажмите для подтверждения"
+
+    cancel-button:
+      slot: 15
+      material: RED_WOOL
+      name: "§x§0§A§7§8§9§9▶ &fОтмена"
+      lore:
+        - ""
+        - "&fНажмите для отмены"
+
+    item-preview-slot: 13
+
+# ═══════════════════════════════════════════════════════════════════════
+#                            СООБЩЕНИЯ
+# ═══════════════════════════════════════════════════════════════════════
+
+messages:
+  prefix: "§x§0§A§7§8§9§9▶ &r"
+
+  # Общие сообщения
+  no-permission: "&fУ вас нет прав на это действие!"
+  player-only: "&fЭта команда доступна только игрокам!"
+  reload-success: "&fКонфигурация успешно перезагружена!"
+
+  # Страхование
+  item-insured: "&fПредмет успешно застрахован!"
+  item-insured-cost: "&fПредмет успешно застрахован! Списано: §x§0§A§7§8§9§9%cost%"
+  item-uninsured: "&fСтраховка снята с предмета."
+  item-already-insured: "&fЭтот предмет уже застрахован!"
+  item-not-allowed: "&fЭтот предмет нельзя застраховать!"
+  no-available-slots: "&fУ вас нет свободных слотов для страхования!"
+  cannot-insure-insured: "&fНельзя застраховать уже застрахованный предмет!"
+  not-enough-money-insure: "&fНедостаточно средств для страхования! Нужно: §x§0§A§7§8§9§9%cost%"
+
+  # Выкуп
+  item-redeemed: "&fВы успешно выкупили предмет за §x§0§A§7§8§9§9%cost% монет"
+  item-redeemed-points: "&fВы успешно выкупили предмет за §x§0§A§7§8§9§9%cost% поинтов"
+  not-enough-money: "&fУ вас недостаточно монет! Нужно: §x§0§A§7§8§9§9%cost%"
+  not-enough-points: "&fУ вас недостаточно поинтов! Нужно: §x§0§A§7§8§9§9%cost%"
+  playerpoints-not-available: "&fДонат-валюта недоступна на сервере!"
+  item-expired-pvp: "&fВремя на выкуп истекло! Предмет передан игроку §x§0§A§7§8§9§9%killer%"
+  item-expired-self: "&fВремя на выкуп истекло! Предмет уничтожен."
+  received-from-expired: "&fВы получили застрахованный предмет от §x§0§A§7§8§9§9%player%"
+  received-from-declined: "&fИгрок §x§0§A§7§8§9§9%player% &fотказался от выкупа. Предмет доступен в меню!"
+  redeem-declined: "&fВы отказались от выкупа предмета."
+  item-not-found: "&fПредмет не найден!"
+  returned-item-claimed: "&fВы забрали предмет от игрока §x§0§A§7§8§9§9%player%"
+
+  # Смерть
+  death-notification: "&fВаш застрахованный предмет ожидает выкупа! Используйте §x§0§A§7§8§9§9/insurance"
+  death-time-warning: "&fУ вас осталось §x§0§A§7§8§9§9%time% &fна выкуп застрахованного предмета!"
+
+  # Апгрейд
+  upgrade-success: "&fВы увеличили количество слотов! Теперь у вас: §x§0§A§7§8§9§9%slots% &fслотов"
+  upgrade-max-reached: "&fВы достигли максимального количества бонусных слотов!"
+  upgrade-stone-not-available: "&cКамни апгрейда недоступны! Установите плагин STVUpgradeStone."
+  upgrade-cancelled: "&fИспользование камня отменено."
+  no-upgrade-stones: "&fУ вас нет камней апгрейда!"
+
+  # Админ команды
+  admin-usage: "&fИспользование: §x§0§A§7§8§9§9/insadmin <reload|setbonus|info>"
+  admin-player-not-found: "&fИгрок не найден!"
+  admin-invalid-number: "&fНеверное число!"
+
+  # Время
+  time-format:
+    hours: "%h%ч %m%мин"
+    minutes: "%m%мин %s%сек"
+    seconds: "%s%сек"
+
+  # Причины смерти
+  death-reasons:
+    pvp: "PvP"
+    fall: "Падение"
+    fire: "Огонь"
+    lava: "Лава"
+    drowning: "Утопление"
+    explosion: "Взрыв"
+    void: "Пустота"
+    magic: "Магия"
+    other: "Другое"
+
+# ═══════════════════════════════════════════════════════════════════════
+#                           ЗВУКИ
+# ═══════════════════════════════════════════════════════════════════════
+
+sounds:
+  enabled: true
+
+  insure-item:
+    sound: ENTITY_PLAYER_LEVELUP
+    volume: 1.0
+    pitch: 1.5
+
+  uninsure-item:
+    sound: ENTITY_ITEM_BREAK
+    volume: 1.0
+    pitch: 1.0
+
+  redeem-item:
+    sound: ENTITY_VILLAGER_YES
+    volume: 1.0
+    pitch: 1.0
+
+  open-menu:
+    sound: BLOCK_CHEST_OPEN
+    volume: 0.5
+    pitch: 1.2
+
+  error:
+    sound: ENTITY_VILLAGER_NO
+    volume: 1.0
+    pitch: 1.0
+
+  upgrade:
+    sound: UI_TOAST_CHALLENGE_COMPLETE
+    volume: 1.0
+    pitch: 1.0
+
+  item-expired:
+    sound: ENTITY_WITHER_DEATH
+    volume: 0.5
+    pitch: 1.5
+
+# ═══════════════════════════════════════════════════════════════════════
+#                         БАЗА ДАННЫХ
+# ═══════════════════════════════════════════════════════════════════════
+
+storage:
+  # Тип хранилища: YAML или MYSQL
+  type: YAML
+
+  # Настройки MySQL (если type: MYSQL)
+  mysql:
+    host: localhost
+    port: 3306
+    database: stvinsurance
+    username: root
+    password: password
+    table-prefix: stv_
+
+    # Пул соединений
+    pool:
+      maximum-pool-size: 10
+      minimum-idle: 2
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
